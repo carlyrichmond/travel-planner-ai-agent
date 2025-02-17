@@ -17,7 +17,9 @@ To check you have Node.js and npm installed, run the following commands:
 node -v
 npm -v
 
-2. Download and install [Ollama](https://ollama.com/) for managing and running models locally. Once installed, download the manifest for the [llama3.3](https://ollama.com/library/llama3.3) model:
+*Please ensure that you are running Node v20.13.1 or higher*
+
+2. Download and install [Ollama](https://ollama.com/) for managing and running models locally. Once installed, download the manifest for the [llama3](https://ollama.com/library/llama3) model:
 
 ```zsh
 ollama pull llama3
@@ -37,10 +39,11 @@ Pull the required code from the accompanying content repository and start the pr
 git clone [TODO]
 ```
 
-Populate the `.env` file with your OpenAI key, Elasticsearch endpoint and Elasticsearch API key as per the below example:
+Populate the `.env` file with your OpenAI key, Weather API key, Elasticsearch endpoint and Elasticsearch API key as per the below example:
 
 ```zsh
 OPEN_AI_KEY=ARandomOpenAIKey?
+WEATHER_API_KEY=MyWeatherKey!
 ELASTIC_DEPLOYMENT=https://my-random-elastic-deployment:123
 ELASTIC_API_KEY=ARandomKey!
 ```
@@ -51,6 +54,6 @@ Initialize and start the application:
 
 ```zsh
 cd [TODO-folder]
-npm install
-npm run start
+npm install # key dependencies: ai @ai-sdk/openai zod ollama-ai-provider
+npm run dev
 ```
