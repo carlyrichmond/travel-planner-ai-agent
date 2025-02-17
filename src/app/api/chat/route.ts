@@ -1,23 +1,27 @@
 import { createOllama } from 'ollama-ai-provider';
 import { streamText } from 'ai';
 
-// Allow streaming responses up to 30 seconds
+// Allow streaming responses up to 30 seconds to address typically longer responses from LLMs
 export const maxDuration = 30;
 
+/* Instantiate provider with custom settings */
 const ollama = createOllama({
   baseURL: 'http://localhost:11434/api', // Default
+
 });
 
+// Post request handler
 export async function POST(req: Request) {
   const { messages } = await req.json();
   
   try {
     const result = streamText({
       model: ollama('llama3'),
-      system: 'You are a helpful assistant that returns itineraries',
+      system: 'You are a helpful assistant that returns travel itineraries',
       messages
     });
-  
+
+    // Return data stream to allow the useChat hook to handle the results as they are streamed through for a better user experience
     return result.toDataStreamResponse();
   } catch(e) {
     console.error(e);
