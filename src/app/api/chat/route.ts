@@ -15,6 +15,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
   
   try {
+    // Generate response from the LLM using the provided model, system prompt and messages
     const result = streamText({
       model: ollama('llama3'),
       system: 'You are a helpful assistant that returns travel itineraries',
