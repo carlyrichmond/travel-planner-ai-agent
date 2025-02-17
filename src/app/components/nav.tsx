@@ -4,11 +4,12 @@ import Image from "next/image";
 
 export default function Nav() {
     return (
-        <div className="nav-fixed">
+        <div className="nav__fixed">
             <a href="/">
                 <Image
                     className="nav__logo"
                     src={logo}
+                    width={50}
                     alt=""
                 />
             </a>
