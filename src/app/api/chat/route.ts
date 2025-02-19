@@ -1,5 +1,5 @@
 import { createOllama } from 'ollama-ai-provider';
-import { generateText, streamText } from 'ai';
+import { streamText } from 'ai';
 
 import { weatherTool } from '@/app/ai/weather.tool';
 import { NextResponse } from 'next/server';
