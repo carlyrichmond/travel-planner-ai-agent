@@ -58,6 +58,7 @@ a {
 .nav__logo {
   margin-left: 1rem;
   width: 30px;
+  height: auto;
 }
 
 .main-content {
@@ -200,6 +201,52 @@ button {
 
 p {
     white-space: break-spaces;
+}
+
+/* Tools summary */
+
+.tools__summary {
+  margin-bottom: 1rem;
+}
+
+/* Weather component */
+
+.weather__tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.loading__weather__message {
+  margin-top: 0.5rem;
+}
+
+.weather__summary__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.weather__temp__condition {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3rem;
+
+  margin: auto;
+}
+
+.temperature__p {
+  font-size: 2.5rem;
+  font-weight: bold;
+  width: 50px;
+  height: 50px;
+}
+
+.feels__like__p {
+  font-weight: bolder;
 }
 
 /* Footer */
