@@ -36,7 +36,7 @@ ollama run llama3
 Pull the required code from the accompanying content repository and start the project:
 
 ```
-git clone [TODO]
+git clone https://github.com/carlyrichmond/travel-planner-ai-agent.git
 ```
 
 Populate the `.env` file with your OpenAI key, Weather API key, Elasticsearch endpoint and Elasticsearch API key as per the below example:
@@ -48,12 +48,19 @@ ELASTIC_DEPLOYMENT=https://my-random-elastic-deployment:123
 ELASTIC_API_KEY=ARandomKey!
 ```
 
-The application makes use of [dotenv](https://www.npmjs.com/package/dotenv) to load the variables from the `.env` file.
+Once these keys have been populated, you can use [`direnv`](https://direnv.net/) or an equivalent tool to load them.
+
+Load the sample flight data using [`tsx`](https://www.npmjs.com/package/tsx) or [`ts-node`](https://www.npmjs.com/package/ts-node):
+
+```zsh
+direnv allow
+cd src/app/scripts
+tsx ingestion.ts
+```
 
 Initialize and start the application:
 
 ```zsh
-cd [TODO-folder]
-npm install # key dependencies: ai @ai-sdk/openai zod ollama-ai-provider
+npm install # key dependencies: ai @ai-sdk/openai zod ollama-ai-provider @elastic/elasticsearch
 npm run dev
 ```
