@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         "Use the current weather from the displayWeather tool to adjust the itinerary and give packing suggestions." +
         "If the FCDO tool warns against travel DO NOT generate an itinerary.",
       messages,
-      maxSteps: 10,
+      maxSteps: 5,
       tools
     });
 
