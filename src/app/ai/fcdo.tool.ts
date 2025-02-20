@@ -27,7 +27,7 @@ export const fcdoTool = createTool({
     } catch(e) {
       console.error(e);
       return { 
-        message: 'Unable to obtain weather information', 
+        message: 'Unable to obtain FCDO information', 
         location: location
       };
     }
