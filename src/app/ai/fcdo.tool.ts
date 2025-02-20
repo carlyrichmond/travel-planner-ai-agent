@@ -22,7 +22,7 @@ export const fcdoTool = createTool({
 
       return { 
         status: alertStatus, 
-        url: fcoResponse.details.document.url
+        url: fcoResponse.details?.document?.url
       };
     } catch(e) {
       console.error(e);

@@ -1,5 +1,5 @@
 import { createOllama } from "ollama-ai-provider";
-import { streamText } from "ai";
+import { generateText, streamText } from "ai";
 import { NextResponse } from "next/server";
 
 import { weatherTool } from "@/app/ai/weather.tool";
@@ -28,12 +28,12 @@ export async function POST(req: Request) {
       model: ollama("llama3.1"),
       system:
         "You are a helpful assistant that returns travel itineraries based for a location" + 
-        "The itinerary must be based on both the weather (from tool displayWeather) and FCDO guidance (from tool fcdoGuidance)." +
-        "Use the current weather to adjust the itinerary and give packing suggestions." +
-        "If FCDO advises against travel to this country, do not generate an itinerary.",
+        "Use the current weather from the displayWeather tool to adjust the itinerary and give packing suggestions." +
+        "If the FCDO tool warns against travel DO NOT generate an itinerary.",
       messages,
       maxSteps: 10,
       tools,
+      //toolChoice: 'required',
       onStepFinish({ text, toolCalls, toolResults, finishReason, usage }) {
         console.log(toolCalls);
       },
