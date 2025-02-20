@@ -32,11 +32,7 @@ export async function POST(req: Request) {
         "If the FCDO tool warns against travel DO NOT generate an itinerary.",
       messages,
       maxSteps: 10,
-      tools,
-      //toolChoice: 'required',
-      onStepFinish({ text, toolCalls, toolResults, finishReason, usage }) {
-        console.log(toolCalls);
-      },
+      tools
     });
 
     // Return data stream to allow the useChat hook to handle the results as they are streamed through for a better user experience
