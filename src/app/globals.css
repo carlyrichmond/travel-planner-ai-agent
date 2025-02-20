@@ -203,26 +203,24 @@ p {
     white-space: break-spaces;
 }
 
-/* Tools summary */
+/* Tools */
 
 .tools__summary {
   margin-bottom: 1rem;
 }
 
-/* Weather component */
-
-.weather__tool {
+.weather__tool, .fcdo__tool {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
 
-.loading__weather__message {
+.loading__weather__message, .loading__fcdo__message {
   margin-top: 0.5rem;
 }
 
-.weather__summary__container {
+.weather__summary__container, .fcdo__summary__container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -247,6 +245,22 @@ p {
 
 .feels__like__p {
   font-weight: bolder;
+}
+
+/* FCDO */
+
+.fcdo__status_p {
+  text-transform: capitalize;
+  font-weight: bold;
+  margin: 0.25rem 0 0.25rem 0;
+}
+
+.map__link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 /* Footer */

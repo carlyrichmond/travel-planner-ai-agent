@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cdn.weatherapi.com',
         port: '',
-        pathname: '/weather/64x64/day/*.png',
+        pathname: '/weather/64x64/*/*.png',
         search: ''
       }
     ]
