@@ -14,7 +14,7 @@ export default function Nav() {
                     width={50}
                     alt=""
                 />
-            </a>
+            </Link>
             <h1>Travel Planner</h1>
         </div>
     );
