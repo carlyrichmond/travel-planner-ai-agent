@@ -199,14 +199,21 @@ button {
   margin-bottom: 0.5rem;
 }
 
-p {
-    white-space: break-spaces;
+.itinerary__div {
+  white-space: break-spaces;
+  margin: 2rem 1.5rem 1rem 1.5rem;
 }
 
 /* Tools */
 
 .tools__summary {
   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  gap: 2rem;
 }
 
 .weather__tool, .fcdo__tool {

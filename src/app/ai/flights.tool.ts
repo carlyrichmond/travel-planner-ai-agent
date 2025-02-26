@@ -1,35 +1,95 @@
 import { tool as createTool } from 'ai';
 import { z } from 'zod';
 
-import { WeatherResponse } from '../model/weather.model';
+import { Client } from '@elastic/elasticsearch';
+import { SearchResponseBody } from '@elastic/elasticsearch/lib/api/types';
+
+import { Flight } from '../model/flight.model';
+
+const index: string = "upcoming-flight-data";
+const client: Client = new Client({
+  node: process.env.ELASTIC_ENDPOINT,
+  auth: {
+    apiKey: process.env.ELASTIC_API_KEY || "",
+  },
+});
+
+function extractFlights(response: SearchResponseBody<Flight>): (Flight | undefined)[] {
+    return response.hits.hits.map(hit => { return hit._source})
+}
 
 export const flightTool = createTool({
-  description: 
-  'Get flight information for a given destination',
+  description:
+    "Get flight information for a given destination from Elasticsearch, both outbound and return journeys",
   parameters: z.object({
-    location: z.string().describe('The location to get the weather for')
+    destination: z.string().describe("The destination we are flying to"),
+    origin: z
+      .string()
+      .describe(
+        "The origin we are flying from (defaults to London if not specified)"
+      ),
   }),
-  execute: async function ({ location }) {
-    // While a historical forecast may be better, this example gets the next 3 days
-    const url = `https://api.weatherapi.com/v1/forecast.json?q=${location}&days=3&key=${process.env.WEATHER_API_KEY}`;
-    
+  execute: async function ({ destination, origin }) {
     try {
-      const response = await fetch(url);
-      const weather : WeatherResponse = await response.json();
-      return { 
-        location: location, 
-        condition: weather.current.condition.text, 
-        condition_image: weather.current.condition.icon,
-        temperature: Math.round(weather.current.temp_c),
-        feels_like_temperature: Math.round(weather.current.feelslike_c),
-        humidity: weather.current.humidity
+      const responses = await client.msearch({
+        searches: [
+          { index: index },
+          {
+            query: {
+              bool: {
+                must: [
+                  {
+                    match: {
+                      origin: origin,
+                    },
+                  },
+                  {
+                    match: {
+                      destination: destination,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+
+          // Return leg
+          { index: index },
+          {
+            query: {
+              bool: {
+                must: [
+                  {
+                    match: {
+                      origin: destination,
+                    },
+                  },
+                  {
+                    match: {
+                      destination: origin,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      });
+
+      if (responses.responses.length < 2) {
+        throw new Error("Unable to obtain flight data");
+      }
+
+      return {
+        outbound: extractFlights(responses.responses[0] as SearchResponseBody<Flight>),
+        inbound: extractFlights(responses.responses[1] as SearchResponseBody<Flight>)
       };
-    } catch(e) {
+    } catch (e) {
       console.error(e);
-      return { 
-        message: 'Unable to obtain weather information', 
-        location: location
+      return {
+        message: "Unable to obtain flight information",
+        location: location,
       };
     }
-  }
+  },
 });

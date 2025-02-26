@@ -1,7 +1,8 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import Image from "next/image";
+import Image from 'next/image';
+import { Converter } from 'showdown';
 
 import Spinner from './components/spinner';
 import { Weather } from './components/weather';
@@ -13,6 +14,7 @@ import pin from '../../public/world-pin.svg';
 export default function Chat() {
   /* useChat hook helps us handle the input, resulting messages, and also handle the loading and error states for a better user experience */
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop, error, reload } = useChat();
+  const markdownConverter = new Converter();
 
   return (
     <div className="chat__form">
@@ -74,8 +76,7 @@ export default function Chat() {
                     })}
                 </div>
                 { /* User or LLM generated content */}
-                <p>{m.content}</p>
-
+                <div className="itinerary__div" dangerouslySetInnerHTML={{ __html: markdownConverter.makeHtml(m.content) }}></div>
               </div>
             </div>
           ))}

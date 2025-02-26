@@ -1,6 +1,6 @@
 # Travel Planner AI Agent
 
-Example Travel Planner Application Showing AI Agents Built Using AI SDK by Vercel
+Example Travel Planner Application Showing AI Agents Built Using AI SDK by Vercel and Elasticsearch.
 
 [TODO Screenshot]
 
@@ -19,17 +19,7 @@ npm -v
 
 *Please ensure that you are running Node v20.13.1 or higher*
 
-2. Download and install [Ollama](https://ollama.com/) for managing and running models locally. Once installed, download the manifest for the [llama3](https://ollama.com/library/llama3) model:
-
-```zsh
-ollama pull llama3
-ollama list
-
-ollama run llama3
->>> Why is the sky blue?
-```
-
-3. Register for an OpenAI key via [their site](https://chatgpt.com/).
+2. Register for an OpenAI key via [their site](https://chatgpt.com/).
 
 ## Install & Run
 
@@ -42,7 +32,7 @@ git clone https://github.com/carlyrichmond/travel-planner-ai-agent.git
 Populate the `.env` file with your OpenAI key, Weather API key, Elasticsearch endpoint and Elasticsearch API key as per the below example:
 
 ```zsh
-OPEN_AI_KEY=ARandomOpenAIKey?
+OPENAI_API_KEY=ARandomOpenAIKey?
 WEATHER_API_KEY=MyWeatherKey!
 ELASTIC_DEPLOYMENT=https://my-random-elastic-deployment:123
 ELASTIC_API_KEY=ARandomKey!
@@ -61,6 +51,6 @@ tsx ingestion.ts
 Initialize and start the application:
 
 ```zsh
-npm install # key dependencies: ai @ai-sdk/openai zod ollama-ai-provider @elastic/elasticsearch
+npm install # key dependencies: ai @ai-sdk/openai zod @elastic/elasticsearch
 npm run dev
 ```

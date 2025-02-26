@@ -1,34 +1,7 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from '@elastic/elasticsearch';
+import { Flight, Location } from '../model/flight.model';
 
-type Flight = {
-  origin: Location;
-  destination: Location;
-  airline: string;
-  flight_number: string;
-  departure_date: Date;
-  currency: string;
-  price: number;
-};
-
-type Location =
-  | "London"
-  | "Glasgow"
-  | "Munich"
-  | "Dublin"
-  | "Barcelona"
-  | "Paris"
-  | "Mauritius"
-  | "Iran"
-  | "Madrid"
-  | "New York"
-  | "Las Vegas"
-  | "Seattle"
-  | "Prague"
-  | "Sao Paulo"
-  | "Sydney"
-  | "Warsaw";
-
-const index = "upcoming-flight-data";
+const index: string = "upcoming-flight-data";
 const client: Client = new Client({
   node: process.env.ELASTIC_ENDPOINT,
   auth: {
