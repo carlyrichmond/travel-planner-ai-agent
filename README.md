@@ -2,11 +2,11 @@
 
 Example Travel Planner Application Showing AI Agents Built Using AI SDK by Vercel and Elasticsearch.
 
-[TODO Screenshot]
+![Travel Planner Screenshot](./screenshots/travel-planner-full.png)
 
 ## Prerequisites
 
-To run this example, please ensure the following prerequisites are performed:
+To run this example, please ensure prerequisites listed in the repository [README](https://github.com/carlyrichmond/travel-planner-ai-agent) are performed:
 
 1. Please ensure you have the following tools installed:
 - Node.js
@@ -21,6 +21,8 @@ npm -v
 
 2. Register for an OpenAI key via [their site](https://chatgpt.com/).
 
+3. Create an account and API key for the [Weather API](https://www.weatherapi.com/). Optionally, you can substitute your own weather data in [`weatherTool`](./src/app/ai/weather.tool.ts).
+
 ## Install & Run
 
 Pull the required code from the accompanying content repository and start the project:
@@ -29,7 +31,7 @@ Pull the required code from the accompanying content repository and start the pr
 git clone https://github.com/carlyrichmond/travel-planner-ai-agent.git
 ```
 
-Populate the `.env` file with your OpenAI key, Weather API key, Elasticsearch endpoint and Elasticsearch API key as per the below example:
+Populate the `.env` file with your OpenAI key, Weather API key, Elasticsearch endpoint and Elasticsearch API key as per the below example, also available in [.example-env](.example-env):
 
 ```zsh
 OPENAI_API_KEY=ARandomOpenAIKey?
