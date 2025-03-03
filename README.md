@@ -42,7 +42,7 @@ ELASTIC_DEPLOYMENT=https://my-random-elastic-deployment:123
 ELASTIC_API_KEY=ARandomKey!
 ```
 
-Once these keys have been populated, you can use [`direnv`](https://direnv.net/) or an equivalent tool to load them.
+Once these keys have been populated, you can use [`direnv`](https://direnv.net/) or an equivalent tool to load them. Note that `.env` file detection requires explicit configuration using the [`load_dotenv` option](https://direnv.net/man/direnv.toml.1.html#codeloaddotenvcode) as covered [here](https://dev.to/charlesloder/tidbit-get-direnv-to-use-env-5fkn).
 
 Load the sample flight data using [`tsx`](https://www.npmjs.com/package/tsx) or [`ts-node`](https://www.npmjs.com/package/ts-node):
 
