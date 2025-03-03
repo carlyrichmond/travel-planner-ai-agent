@@ -14,8 +14,10 @@ To run this example, please ensure prerequisites listed in the repository [READM
 
 To check you have Node.js and npm installed, run the following commands:
 
+```zsh
 node -v
 npm -v
+```
 
 *Please ensure that you are running Node v20.13.1 or higher*
 
@@ -27,7 +29,7 @@ npm -v
 
 Pull the required code from the accompanying content repository and start the project:
 
-```
+```zsh
 git clone https://github.com/carlyrichmond/travel-planner-ai-agent.git
 ```
 
