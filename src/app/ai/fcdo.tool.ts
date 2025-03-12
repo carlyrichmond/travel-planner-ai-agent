@@ -10,7 +10,6 @@ export const fcdoTool = createTool({
     country: z.string().describe('The country of the location to get the guidance for')
   }),
   execute: async function ({ country }) {
-    // While a historical forecast may be better, this example gets the next 3 days
     const url = `https://www.gov.uk/api/content/foreign-travel-advice/${country.toLowerCase()}`;
     
     try {
