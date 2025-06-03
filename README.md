@@ -1,6 +1,6 @@
 # Travel Planner AI Agent
 
-Example Travel Planner Application Showing AI Agents Built Using AI SDK by Vercel and Elasticsearch.
+Example Travel Planner Application Showing AI Agents Built Using AI SDK by Vercel and Elasticsearch. It features in the piece [Building AI Agents with AI SDK and Elastic](https://www.elastic.co/search-labs/blog/ai-agents-ai-sdk-elasticsearch) in [Elasticsearch Labs](https://www.elastic.co/search-labs/).
 
 ![Travel Planner Screenshot](./screenshots/travel-planner-full.png)
 
