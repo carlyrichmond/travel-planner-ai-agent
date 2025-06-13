@@ -1,7 +1,7 @@
 import { tool as createTool } from 'ai';
 import { z } from 'zod';
 
-import { FCDOResponse } from '../model/fco.model';
+import { FCDOResponse } from '../model/fcdo.model';
 
 export const fcdoTool = createTool({
   description: 
@@ -14,14 +14,14 @@ export const fcdoTool = createTool({
     
     try {
       const response = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
-      const fcoResponse: FCDOResponse = await response.json();
+      const fcdoResponse: FCDOResponse = await response.json();
 
-      const alertStatus: string = fcoResponse.details.alert_status.length == 0 ? 'Unknown' : 
-      fcoResponse.details.alert_status[0].replaceAll('_', ' ');
+      const alertStatus: string = fcdoResponse.details.alert_status.length == 0 ? 'OK' : 
+      fcdoResponse.details.alert_status[0]?.replaceAll('_', ' ');
 
       return { 
         status: alertStatus, 
-        url: fcoResponse.details?.document?.url
+        url: fcdoResponse.details?.document?.url
       };
     } catch(e) {
       console.error(e);

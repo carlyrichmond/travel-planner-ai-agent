@@ -21,10 +21,11 @@ export async function POST(req: Request) {
 
   try {
     const result = streamText({
-      model: openai('gpt-4-turbo'),
+      model: openai('gpt-4o'),
       system:
       "You are a helpful assistant that returns travel itineraries based on location, the FCDO guidance from the specified tool, and the weather captured from the displayWeather tool." + 
       "Use the flight information from tool getFlights only to recommend possible flights in the itinerary." + 
+      "If there are no flights available generate a sample itinerary and advise them to contact a travel agent." + 
       "Return an itinerary of sites to see and things to do based on the weather." + 
       "If the FCDO tool warns against travel DO NOT generate an itinerary.",
       messages,

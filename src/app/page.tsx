@@ -13,7 +13,7 @@ import pin from '../../public/world-pin.svg';
 
 export default function Chat() {
   /* useChat hook helps us handle the input, resulting messages, and also handle the loading and error states for a better user experience */
-  const { messages, input, handleInputChange, handleSubmit, isLoading, stop, error, reload } = useChat();
+  const { messages, input, handleInputChange, handleSubmit, status, stop, error, reload } = useChat();
   const markdownConverter = new Converter();
 
   return (
@@ -84,7 +84,7 @@ export default function Chat() {
 
       {
         /* Spinner shows when awaiting a response */
-        isLoading && (
+        status == 'submitted' && (
           <div className="spinner__container">
             <Spinner />
             <button id="stop__button" type="button" onClick={() => stop()}>

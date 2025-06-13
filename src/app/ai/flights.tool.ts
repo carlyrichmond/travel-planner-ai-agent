@@ -15,7 +15,7 @@ const client: Client = new Client({
 });
 
 function extractFlights(response: SearchResponseBody<Flight>): (Flight | undefined)[] {
-    return response.hits.hits.map(hit => { return hit._source})
+    return response.hits.hits.map((hit: { _source: Flight; }) => { return hit._source})
 }
 
 export const flightTool = createTool({

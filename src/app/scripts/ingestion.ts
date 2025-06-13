@@ -39,6 +39,7 @@ async function addFlightsToIndex() {
   const locations: Location[] = [
     "London",
     "Glasgow",
+    "Berlin",
     "Munich",
     "Dublin",
     "Barcelona",

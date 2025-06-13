@@ -38,7 +38,7 @@ Populate the `.env` file with your OpenAI key, Weather API key, Elasticsearch en
 ```zsh
 OPENAI_API_KEY=ARandomOpenAIKey?
 WEATHER_API_KEY=MyWeatherKey!
-ELASTIC_DEPLOYMENT=https://my-random-elastic-deployment:123
+ELASTIC_ENDPOINT=https://my-random-elastic-deployment:123
 ELASTIC_API_KEY=ARandomKey!
 ```
 
@@ -49,7 +49,7 @@ Load the sample flight data using [`tsx`](https://www.npmjs.com/package/tsx) or 
 ```zsh
 direnv allow
 cd src/app/scripts
-tsx ingestion.ts
+npx tsx ingestion.ts
 ```
 
 Initialize and start the application:

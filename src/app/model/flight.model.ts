@@ -11,6 +11,7 @@ export type Flight = {
 export type Location =
   | "London"
   | "Glasgow"
+  | "Berlin"
   | "Munich"
   | "Dublin"
   | "Barcelona"
