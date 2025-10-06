@@ -36,7 +36,6 @@ export async function POST(req: Request) {
 
     // Return data stream to allow the useChat hook to handle the results as they are streamed through for a better user experience
     return result.toUIMessageStreamResponse();
-    //return result;
   } catch (e) {
     console.error(e);
     return new NextResponse(
