@@ -1,15 +1,24 @@
-import { tool as createTool } from 'ai';
-import { z } from 'zod';
+import { tool } from 'ai';
+import { z } from 'zod/v3';
 
 import { WeatherResponse } from '../model/weather.model';
 
-export const weatherTool = createTool({
+export const weatherTool = tool({
   description: 
   'Display the weather for a holiday location',
-  parameters: z.object({
+  inputSchema: z.object({
     location: z.string().describe('The location to get the weather for')
   }),
-  execute: async function ({ location }) {
+  outputSchema: z.object({
+    location: z.string().describe('The location to get the weather for'),
+    condition: z.string().optional().describe('The current weather condition'),
+    condition_image: z.string().optional().describe('An image representing the current weather condition'),
+    temperature: z.number().optional().describe('The current temperature in Celsius'),
+    feels_like_temperature: z.number().optional().describe('What the temperature feels like in Celsius'),
+    humidity: z.number().optional().describe('The current humidity percentage'),
+    message: z.string().optional().describe('An optional message, e.g. for errors')
+  }),
+  execute: async ({ location }: { location: string}) => {
     // While a historical forecast may be better, this example gets the next 3 days
     const url = `https://api.weatherapi.com/v1/forecast.json?q=${location}&days=3&key=${process.env.WEATHER_API_KEY}`;
     

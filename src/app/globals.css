@@ -209,7 +209,7 @@ button {
 .tools__summary {
   margin-bottom: 1rem;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 

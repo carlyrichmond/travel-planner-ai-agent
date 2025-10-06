@@ -3,13 +3,16 @@ import Link from 'next/link'
 
 import pin from '../../../public/world-pin.svg';
 
-type FCDOGuidanceProps = {
+export type FCDOGuidanceProps = {
+  country: string,
   status: string,
   url: string
 }
 
 function getFormattedStatus(status: string): string {
-  if (status.includes("avoid all travel")) {
+  if (!status) {
+    return '❓ Unknown'
+  } else if (status.includes("avoid all travel")) {
     return `❗ ${status}`;
   } else if (status.includes("avoid all but essential")) {
     return `⚠️ ${status}`;

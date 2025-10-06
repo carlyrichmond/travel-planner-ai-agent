@@ -1,117 +1,178 @@
-'use client';
+"use client";
+import { useChat } from "@ai-sdk/react";
+import { FormEvent, KeyboardEvent, useState } from "react";
+import Image from "next/image";
+import { Converter } from "showdown";
 
-import { useChat } from '@ai-sdk/react';
-import Image from 'next/image';
-import { Converter } from 'showdown';
+import Spinner from "./components/spinner";
+import { Weather, WeatherProps } from "./components/weather";
 
-import Spinner from './components/spinner';
-import { Weather } from './components/weather';
-import { FCDOGuidance } from './components/fcdo';
-
-import pending from '../../public/multi-cloud.svg';
-import pin from '../../public/world-pin.svg';
+import pending from "../../public/multi-cloud.svg";
+import { DefaultChatTransport } from "ai";
+import pin from "../../public/world-pin.svg";
+import { FCDOGuidance, FCDOGuidanceProps } from "./components/fcdo";
 
 export default function Chat() {
+  const [input, setInput] = useState("");
+  const [lastRequest, setLastRequest] = useState("");
   /* useChat hook helps us handle the input, resulting messages, and also handle the loading and error states for a better user experience */
-  const { messages, input, handleInputChange, handleSubmit, status, stop, error, reload } = useChat();
+  const { messages, sendMessage, status, stop, error } = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
+  });
   const markdownConverter = new Converter();
+
+  function sendUserChat(
+    event: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLInputElement>
+  ) {
+    event.preventDefault();
+    if (input.trim()) {
+      sendMessage({
+        parts: [{ type: "text", text: input }],
+      });
+      setLastRequest(input);
+      setInput("");
+    }
+  }
 
   return (
     <div className="chat__form">
       <div className="chat__messages">
         {
           /* Display all user messages and assistant responses */
-          messages.map(m => (
+          messages.map((m) => (
             <div key={m.id} className="message">
               <div>
-                { /* Messages with the role of *assistant* denote responses from the LLM */}
-                <div className="role">{m.role === "assistant" ? "Sorley" : "Me"}</div>
-                { /* Tool handling */}
+                {/* Messages with the role of *assistant* denote responses from the LLM */}
+                <div className="role">
+                  {m.role === "user" ? "Me" : "Sorley"}
+                </div>
+                {/* Tool handling */}
                 <div className="tools__summary">
-                  {
-                    m.parts.map(part => {
-                      if (part.type === 'tool-invocation') {
-                        const { toolName, toolCallId, state } = part.toolInvocation;
-
-                        if (state === 'result') {
-                          if (toolName === 'displayWeather') {
-                            { /* Show weather results */}
-                            const { result } = part.toolInvocation;
+                  {m.parts.map((part, index) => {
+                    if (part.type === "text") {
+                      { /* User or LLM generated content */}
+                      return (
+                        <div
+                          className="itinerary__div"
+                          key={`${m.id}-${index}-text`}
+                          dangerouslySetInnerHTML={{
+                            __html: markdownConverter.makeHtml(part.text),
+                          }}></div>
+                      );
+                    } else {
+                      if (part.type === "tool-weather") {
+                        switch (part.state) {
+                          case "input-available":
                             return (
-                              <div key={toolCallId}>
-                                <Weather {...result} />
-                              </div>
-                            )
-                           } else if (toolName === 'fcdoGuidance') {
-                            { /* Show FCDO travel guidance */}
-                            const { result } = part.toolInvocation;
-                            return (
-                              <div key={toolCallId}>
-                                <FCDOGuidance {...result} />
+                              <div className="weather__tool" key={index}>
+                                <Image
+                                  src={pending}
+                                  width={80}
+                                  height={80}
+                                  alt="Placeholder Weather"
+                                />
+                                <p className="loading__weather__message">
+                                  Loading weather...
+                                </p>
                               </div>
                             );
-                          }
-                        } else {
-                          return (
-                            <div key={toolCallId}>
-                              {toolName === 'displayWeather' ? (
-                                <div className="weather__tool">
-                                  <Image src={pending} width={80} height={80} alt="Placeholder Weather"/>
-                                  <p className="loading__weather__message">Loading weather...</p>
-                                </div>
-                              ) : null}
-
-                              {toolName === 'fcdoGuidance' ? (
-                                <div className="fcdo__tool">
-                                  <Image src={pin} width={80} height={80} alt="Placeholder FCDO Advice"/>
-                                  <p className="loading__fcdo__message">Loading FCDO advice...</p>
-                                </div>
-                              ) : null}
-                            </div>
-                          );
+                          case "output-available":
+                            return (
+                              <div className="weather__tool" key={index}>
+                                <Weather {...(part.output as WeatherProps)} />
+                              </div>
+                            );
+                          case "output-error":
+                            return <div className="weather__tool" key={index}>No weather available!</div>;
+                          default:
+                            return null;
                         }
-
-                        
+                      } else if (part.type === "tool-fcdo") {
+                        switch (part.state) {
+                          case "input-available":
+                            return (
+                              <div className="fcdo__tool" key={index}>
+                                  <Image
+                                    src={pin}
+                                    width={80}
+                                    height={80}
+                                    alt="Placeholder FCDO Advice"
+                                  />
+                                  <p className="loading__fcdo__message">
+                                    Loading FCDO advice...
+                                  </p>
+                                </div>
+                            );
+                          case "output-available":
+                            return (
+                              <div className="fcdo__tool" key={index}>
+                                  <FCDOGuidance
+                                    {...(part.output as FCDOGuidanceProps)}
+                                  />
+                                </div>
+                            );
+                          case "output-error":
+                            return <div key={index}>No FCDO guidance!</div>;
+                          default:
+                            return null;
+                        }
                       }
-                    })}
+                    }
+                  })}
                 </div>
-                { /* User or LLM generated content */}
-                <div className="itinerary__div" dangerouslySetInnerHTML={{ __html: markdownConverter.makeHtml(m.content) }}></div>
               </div>
             </div>
-          ))}
+          ))
+        }
       </div>
-
       {
         /* Spinner shows when awaiting a response */
-        status == 'submitted' && (
+        (status === "submitted" || status === "streaming") && (
           <div className="spinner__container">
             <Spinner />
             <button id="stop__button" type="button" onClick={() => stop()}>
               Stop
             </button>
           </div>
-        )}
-
+        )
+      }
       {
         /* Show error message and return button when something goes wrong */
         error && (
           <>
-            <div className="error__container">Unable to generate a plan. Please try again later!</div>
-            <button id="retry__button" type="button" onClick={() => reload()}>
+            <div className="error__container">
+              Unable to generate a plan. Please try again later!
+            </div>
+            <button
+              id="retry__button"
+              type="button"
+              onClick={() => sendMessage({ text: lastRequest })}
+            >
               Retry
             </button>
           </>
-        )}
-
-      { /* Form using default input and submission handler form the useChat hook */}
-      <form onSubmit={handleSubmit}>
+        )
+      }
+      <form
+        onSubmit={(event) => {
+          sendUserChat(event);
+        }}
+      >
         <input
           className="search-box__input"
           value={input}
           placeholder="Where would you like to go?"
-          onChange={handleInputChange}
-          disabled={error != null}
+          disabled={status !== "ready"}
+          onChange={(event) => {
+            setInput(event.target.value);
+          }}
+          onKeyDown={async (event) => {
+            if (event.key === "Enter") {
+              sendUserChat(event);
+            }
+          }}
         />
       </form>
     </div>

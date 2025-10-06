@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-type WeatherProps = { 
+export type WeatherProps = { 
   location: string, 
   condition: string, 
   condition_image: string,
@@ -11,6 +11,7 @@ type WeatherProps = {
 
 
   export const Weather = (props: WeatherProps) => {
+    console.log(`Weather props: ${JSON.stringify(props)}`);
     const conditionImageURL: string = `https:${props.condition_image}`;
     return (
       <div className="weather__summary__container">
