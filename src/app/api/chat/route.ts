@@ -1,10 +1,11 @@
-import { openai } from '@ai-sdk/openai';
-import { streamText, stepCountIs, convertToModelMessages, UIMessage } from 'ai';
-import { NextResponse } from 'next/server';
+import { openai } from "@ai-sdk/openai";
+import { streamText, stepCountIs, convertToModelMessages } from "ai";
+import { NextResponse } from "next/server";
 
-import { weatherTool } from '@/app/ai/weather.tool';
-import { fcdoTool } from '@/app/ai/fcdo.tool';
-import { flightTool } from '@/app/ai/flights.tool';
+import { weatherTool } from "@/app/ai/weather.tool";
+import { fcdoTool } from "@/app/ai/fcdo.tool";
+import { flightTool } from "@/app/ai/flights.tool";
+import { getSimilarMessages, persistMessage } from "@/app/util/elasticsearch";
 
 // Allow streaming responses up to 30 seconds to address typically longer responses from LLMs
 export const maxDuration = 30;
@@ -12,26 +13,34 @@ export const maxDuration = 30;
 const tools = {
   flights: flightTool,
   weather: weatherTool,
-  fcdo: fcdoTool
+  fcdo: fcdoTool,
 };
 
 // Post request handler
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
-  const convertedMessages = convertToModelMessages(messages);
+  const { messages, id } = await req.json();
+
+  // Store current message
+  const lastMessageIndex = messages.length > 0 ? messages.length - 1 : 0;
+  await persistMessage(messages[lastMessageIndex], id);
+
+  // Get chat history by chat id 
+  const previousMessages = await getSimilarMessages(messages[lastMessageIndex]);
+  const allMessages = [...previousMessages, ...messages];
 
   try {
+    const convertedMessages = convertToModelMessages(allMessages);
     const result = streamText({
-      model: openai('gpt-4o'),
+      model: openai("gpt-4o"),
       system:
-      "You are a helpful assistant that returns travel itineraries based on location, the FCDO guidance from the specified tool, and the weather captured from the displayWeather tool." + 
-      "Use the flight information from tool getFlights only to recommend possible flights in the itinerary." + 
-      "If there are no flights available generate a sample itinerary and advise them to contact a travel agent." + 
-      "Return an itinerary of sites to see and things to do based on the weather." + 
-      "If the FCDO tool warns against travel DO NOT generate an itinerary.",
+        "You are a helpful assistant that returns travel itineraries based on location, the FCDO guidance from the specified tool, and the weather captured from the displayWeather tool." +
+        "Use the flight information from tool getFlights only to recommend possible flights in the itinerary." +
+        "If there are no flights available generate a sample itinerary and advise them to contact a travel agent." +
+        "Return an itinerary of sites to see and things to do based on the weather." +
+        "If the FCDO tool warns against travel DO NOT generate an itinerary.",
       messages: convertedMessages,
       stopWhen: stepCountIs(2),
-      tools
+      tools,
     });
 
     // Return data stream to allow the useChat hook to handle the results as they are streamed through for a better user experience

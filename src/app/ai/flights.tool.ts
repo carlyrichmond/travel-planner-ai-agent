@@ -1,17 +1,8 @@
 import { tool } from 'ai';
 import { z } from 'zod/v3';
 
-import { Client } from '@elastic/elasticsearch';
-
 import { Flight } from '../model/flight.model';
-
-const index: string = "upcoming-flight-data";
-const client: Client = new Client({
-  node: process.env.ELASTIC_ENDPOINT,
-  auth: {
-    apiKey: process.env.ELASTIC_API_KEY || "",
-  },
-});
+import { client, flightIndex } from '../util/elasticsearch';
 
 function extractFlights(response: { hits?: { hits?: { _source: Flight }[] } }): (Flight | undefined)[] {
     if (response.hits && Array.isArray(response.hits.hits)) {
@@ -31,7 +22,7 @@ export const flightTool = tool({
     try {
       const responses = await client.msearch({
         searches: [
-          { index: index },
+          { index: flightIndex },
           {
             query: {
               bool: {
@@ -52,7 +43,7 @@ export const flightTool = tool({
           },
 
           // Return leg
-          { index: index },
+          { index: flightIndex },
           {
             query: {
               bool: {
