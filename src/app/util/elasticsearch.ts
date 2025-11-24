@@ -1,5 +1,5 @@
 import { Client } from "@elastic/elasticsearch";
-import { UIMessage } from "ai";
+import { ModelMessage } from "ai";
 
 export const flightIndex: string = "upcoming-flight-data";
 export const client: Client = new Client({
@@ -10,9 +10,11 @@ export const client: Client = new Client({
 });
 
 const messageIndex: string = "chat-messages";
-export async function persistMessage(message: UIMessage, id: string) {
-  try {
-    if (!(await client.indices.exists({ index: messageIndex }))) {
+/**
+ * Create the chat messages index if it does not already exist
+ */
+async function createMessagesIndexIfNotExists() {
+  if (!(await client.indices.exists({ index: messageIndex }))) {
       await client.indices.create({
         index: messageIndex,
         mappings: {
@@ -21,9 +23,8 @@ export async function persistMessage(message: UIMessage, id: string) {
             message: {
               type: "object",
               properties: {
-                id: { type: "keyword" },
                 role: { type: "keyword" },
-                text: { type: "semantic_text" }
+                content: { type: "semantic_text" }
               },
             },
             "@timestamp": { type: "date" },
@@ -32,18 +33,21 @@ export async function persistMessage(message: UIMessage, id: string) {
       });
       await new Promise((r) => setTimeout(r, 2000));
     }
+}
 
-    const messageText = message.parts.map(part => "text" in part && typeof part.text === "string" ? part.text : "").join(" ")
-
+/**
+ * Persist a chat message to Elasticsearch
+ * @param message: current message
+ * @param id: unique chat id 
+ */
+export async function persistMessage(message: ModelMessage, id: string) {
+  try {
+    await createMessagesIndexIfNotExists();
     await client.index({
       index: messageIndex,
       document: {
         "chat-id": id,
-        message: {
-            id: message.id,
-            role: message.role,
-            text: messageText
-        },
+        message: message,
         "@timestamp": new Date().toISOString(),
       },
     });
@@ -52,20 +56,23 @@ export async function persistMessage(message: UIMessage, id: string) {
   }
 }
 
-export async function getSimilarMessages(
-  message: UIMessage
-): Promise<UIMessage[]> {
+/**
+ * Get similar chat messages from Elasticsearch based on semantic search
+ * @param content: current message content 
+ * @returns 
+ */
+export async function getSimilarMessages(content: string): Promise<(ModelMessage)[]> {
+  if (!(await client.indices.exists({ index: messageIndex }))) {
+    return [];
+  }
+
   try {
-    const result = await client.search<{ message: UIMessage }>({
+    const result = await client.search<{ message: ModelMessage }>({
       index: messageIndex,
       query: {
         semantic: {
-          field: "message.parts.text",
-          query: message.parts
-            .map((part) =>
-              "text" in part && typeof part.text === "string" ? part.text : " "
-            )
-            .join(" "),
+          field: "message.content",
+          query: content,
         },
       },
       sort: [{ "@timestamp": "asc" }],
@@ -73,8 +80,7 @@ export async function getSimilarMessages(
     });
 
     return result.hits.hits
-      .map((hit) => hit._source?.message)
-      .filter((msg): msg is UIMessage => msg !== undefined);
+      .map((hit) => hit._source?.message as ModelMessage)
   } catch (e) {
     console.error("Unable to retrieve messages", e);
     return [];

@@ -4,11 +4,11 @@ import { z } from 'zod/v3';
 import { Flight } from '../model/flight.model';
 import { client, flightIndex } from '../util/elasticsearch';
 
-function extractFlights(response: { hits?: { hits?: { _source: Flight }[] } }): (Flight | undefined)[] {
+function extractFlights(response: { hits?: { hits?: { _source: Flight }[] } }): (Flight | undefined) {
     if (response.hits && Array.isArray(response.hits.hits)) {
-        return response.hits.hits.map((hit: { _source: Flight; }) => hit._source);
+        return response.hits.hits.map((hit: { _source: Flight; }) => hit._source)[0];
     }
-    return [];
+    return undefined;
 }
 
 export const flightTool = tool({
@@ -17,6 +17,10 @@ export const flightTool = tool({
   inputSchema: z.object({
     destination: z.string().describe("The destination we are flying to"),
     origin: z.string().describe("The origin we are flying from").default("London"),
+  }),
+  outputSchema: z.object({
+    outbound: z.custom<Flight>().describe("List of outbound flights"),
+    inbound: z.custom<Flight>().describe("List of return flights")
   }),
   execute: async function ({ destination, origin }) {
     try {

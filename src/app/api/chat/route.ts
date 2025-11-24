@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { streamText, stepCountIs, convertToModelMessages } from "ai";
+import { streamText, stepCountIs, convertToModelMessages, ModelMessage } from "ai";
 import { NextResponse } from "next/server";
 
 import { weatherTool } from "@/app/ai/weather.tool";
@@ -20,27 +20,38 @@ const tools = {
 export async function POST(req: Request) {
   const { messages, id } = await req.json();
 
-  // Store current message
+  // Get chat history by chat id
   const lastMessageIndex = messages.length > 0 ? messages.length - 1 : 0;
-  await persistMessage(messages[lastMessageIndex], id);
+  const messageContent = messages[lastMessageIndex].parts
+    .map((part: { text: string }) =>
+      "text" in part && typeof part.text === "string" ? part.text : ""
+    )
+    .join(" ");
 
-  // Get chat history by chat id 
-  const previousMessages = await getSimilarMessages(messages[lastMessageIndex]);
-  const allMessages = [...previousMessages, ...messages];
+  const previousMessages = await getSimilarMessages(messageContent);
+  
 
   try {
-    const convertedMessages = convertToModelMessages(allMessages);
+    const convertedMessages = convertToModelMessages(messages);
+    const allMessages: ModelMessage[] =
+      previousMessages.concat(convertedMessages);
+      
     const result = streamText({
       model: openai("gpt-4o"),
       system:
-        "You are a helpful assistant that returns travel itineraries based on location, the FCDO guidance from the specified tool, and the weather captured from the displayWeather tool." +
-        "Use the flight information from tool getFlights only to recommend possible flights in the itinerary." +
-        "If there are no flights available generate a sample itinerary and advise them to contact a travel agent." +
-        "Return an itinerary of sites to see and things to do based on the weather." +
-        "If the FCDO tool warns against travel DO NOT generate an itinerary.",
-      messages: convertedMessages,
+        `You are a helpful assistant that returns travel itineraries based on location, 
+      the FCDO guidance from the specified tool, the available flights from the flight tool, 
+      and the weather captured from the displayWeather tool.
+      Use the flight information from tool getFlights only to recommend possible flights in the itinerary.
+      You must also return a day-by-day textual itinerary of sites to see and things to do based on the weather result.
+      Reuse and adapt past itineraries for the same destination if one exists in your memory.
+      If the FCDO tool warns against travel DO NOT generate recommendations of things to do, and explain why.`,
+      messages: allMessages,
       stopWhen: stepCountIs(2),
-      tools,
+      tools,onFinish: async ({ text }) => {
+        const finalMessage = { role: "system", content: text } as ModelMessage;
+        await persistMessage(finalMessage, id);
+      },
     });
 
     // Return data stream to allow the useChat hook to handle the results as they are streamed through for a better user experience
