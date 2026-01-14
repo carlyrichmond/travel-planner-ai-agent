@@ -48,6 +48,7 @@ export async function POST(req: Request) {
       If the FCDO tool warns against travel DO NOT generate recommendations of things to do, and explain why.`,
       messages: allMessages,
       stopWhen: stepCountIs(2),
+      tools,
       onFinish: async ({ text }) => {
         const finalMessage = { role: "system", content: text } as ModelMessage;
         await persistMessage(finalMessage, id);
