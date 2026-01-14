@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { openai } from '@ai-sdk/openai';
 import { streamText, stepCountIs, convertToModelMessages, ModelMessage } from "ai";
 import { NextResponse } from "next/server";
 
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       If the FCDO tool warns against travel DO NOT generate recommendations of things to do, and explain why.`,
       messages: allMessages,
       stopWhen: stepCountIs(2),
-      tools,onFinish: async ({ text }) => {
+      onFinish: async ({ text }) => {
         const finalMessage = { role: "system", content: text } as ModelMessage;
         await persistMessage(finalMessage, id);
       },
