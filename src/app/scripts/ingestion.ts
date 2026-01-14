@@ -58,7 +58,7 @@ async function addFlightsToIndex() {
 
   for (let i = 0; i < 1000; i++) {
     const startDate = new Date();
-    const endDate = new Date(2026, 1, 1);
+    const endDate = new Date(2028, 1, 1);
     const departureDate = new Date(
       startDate.getTime() +
         Math.random() * (endDate.getTime() - startDate.getTime())
@@ -83,5 +83,5 @@ async function addFlightsToIndex() {
   }
 }
 
-createIndex();
+//createIndex();
 addFlightsToIndex();
