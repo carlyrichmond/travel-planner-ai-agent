@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   
 
   try {
-    const convertedMessages = convertToModelMessages(messages);
+    const convertedMessages = await convertToModelMessages(messages);
     const allMessages: ModelMessage[] =
       previousMessages.concat(convertedMessages);
       
