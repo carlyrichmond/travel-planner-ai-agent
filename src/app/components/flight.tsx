@@ -11,7 +11,10 @@ export type RecommendedFlights = {
 }
 
 function priceWithCommas(price: number): string {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if (!price) { 
+    return "-";
+  }
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 export const Flights = (props: FlightProps) => {
